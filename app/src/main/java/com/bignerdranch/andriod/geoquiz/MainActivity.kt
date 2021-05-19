@@ -24,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     Question(R.string.question_americas, true),
     Question(R.string.question_asia, true)
   )
+
+  private val alreadyAnswered = MutableList(questionBank.size, { false })
+
   private var currentIndex = 0
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,17 +41,19 @@ class MainActivity : AppCompatActivity() {
 
     trueButton.setOnClickListener { view ->
       checkAnswer(true)
+      updateUI()
     }
 
     falseButton.setOnClickListener { view ->
       checkAnswer(false)
+      updateUI()
     }
 
     nextButton.setOnClickListener {
       currentIndex = (currentIndex + 1) % questionBank.size
-      updateQuestion()
+      updateUI()
     }
-    updateQuestion()
+    updateUI()
   }
 
   override fun onStart() {
@@ -76,6 +81,12 @@ class MainActivity : AppCompatActivity() {
     Log.d(TAG, "onDestroy() called")
   }
 
+  private fun updateUI() {
+    trueButton.isEnabled = !alreadyAnswered[currentIndex]
+    falseButton.isEnabled = !alreadyAnswered[currentIndex]
+    updateQuestion()
+  }
+
   private fun updateQuestion() {
     val questionTextResId = questionBank[currentIndex].textResId
     questionTextView.setText(questionTextResId)
@@ -89,5 +100,7 @@ class MainActivity : AppCompatActivity() {
       R.string.incorrect_toast
     }
     Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+
+    alreadyAnswered[currentIndex] = true
   }
 }
