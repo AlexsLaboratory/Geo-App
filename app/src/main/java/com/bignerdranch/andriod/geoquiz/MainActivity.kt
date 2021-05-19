@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
 
   private var currentIndex = 0
 
+  private var numberAnswered = 0
+  private var answeredCorrectly = 0
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Log.d(TAG, "onCreate(Bundle?) called")
@@ -95,6 +98,7 @@ class MainActivity : AppCompatActivity() {
   private fun checkAnswer(userAnswer: Boolean) {
     val correctAnswer = questionBank[currentIndex].answer
     val messageResId = if (userAnswer == correctAnswer) {
+      ++answeredCorrectly
       R.string.correct_toast
     } else {
       R.string.incorrect_toast
@@ -102,5 +106,15 @@ class MainActivity : AppCompatActivity() {
     Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
 
     alreadyAnswered[currentIndex] = true
+    ++numberAnswered
+
+    if (numberAnswered == questionBank.size) {
+      var percentCorrect = answeredCorrectly * 100.0 / questionBank.size
+      Toast.makeText(
+        this,
+        "You scored ${answeredCorrectly} out of ${questionBank.size} for a score of ${percentCorrect}%",
+        Toast.LENGTH_SHORT
+      ).show()
+    }
   }
 }
