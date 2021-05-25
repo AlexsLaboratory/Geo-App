@@ -1,7 +1,9 @@
 package com.bignerdranch.andriod.geoquiz
 
 import QuizViewModel
+import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -39,11 +41,11 @@ class MainActivity : AppCompatActivity() {
     cheatButton = findViewById(R.id.cheat_button)
     questionTextView = findViewById(R.id.question_text_view)
 
-    trueButton.setOnClickListener { view ->
+    trueButton.setOnClickListener {
       checkAnswer(true)
     }
 
-    falseButton.setOnClickListener { view ->
+    falseButton.setOnClickListener {
       checkAnswer(false)
     }
 
@@ -52,8 +54,14 @@ class MainActivity : AppCompatActivity() {
       updateQuestion()
     }
 
-    cheatButton.setOnClickListener {
-      startActivityForResult(CheatActivity.newIntent(this@MainActivity, quizViewModel.currentQuestionAnswer), REQUEST_CODE_CHEAT)
+    cheatButton.setOnClickListener { view ->
+      val intent = CheatActivity.newIntent(this@MainActivity, quizViewModel.currentQuestionAnswer)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val options = ActivityOptions.makeClipRevealAnimation(view, 0, 0, view.width, view.height)
+        startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+      } else {
+        startActivityForResult(intent, REQUEST_CODE_CHEAT)
+      }
     }
 
     updateQuestion()
